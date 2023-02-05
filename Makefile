@@ -17,6 +17,7 @@ extract_int32.o \
 extract_uint8.o \
 extract_uint16.o \
 extract_uint32.o \
+extract_utf8_str.o \
 from_buffer.o \
 from_FILE.o \
 init.o \
@@ -26,6 +27,7 @@ insert_int32.o \
 insert_uint8.o \
 insert_uint16.o \
 insert_uint32.o \
+insert_utf8_str.o \
 is_value_no_alloc.o \
 size.o \
 time.o \

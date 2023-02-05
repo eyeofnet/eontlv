@@ -104,7 +104,7 @@
 #define TLV_TIME                        0x0052 /* 16-bit big-endian integer containing HMSM (hour, minute, second, millisecond) formatted time */
 #define TLV_DATETIME                    0x0053 /* 32-bit big-endian integer formatted as above-described date and time */
 
-#define TLV_APPLICATION_SPECIFIC_START  0x7000 /* Start of reserved application-specific values */ 
+#define TLV_APPLICATION_SPECIFIC_START  0x7000 /* Start of reserved application-specific values */
 #define TLV_APPLICATION_SPECIFIC_END    0x7FFF /* End of reserved application-specific values */
 
 #define TLV_ERR_BASE                    17000
@@ -181,6 +181,12 @@ void tlv_insert_int64(tlv_t *tlv,int64_t v,int *err);
 int64_t tlv_extract_int64(tlv_t *tlv,int *err);
 void tlv_insert_uint64(tlv_t *tlv,uint64_t v,int *err);
 uint64_t tlv_extract_uint64(tlv_t *tlv,int *err);
+
+void tlv_insert_cstr_string(tlv_t *tlv,const char *str,int *err);
+void tlv_extract_cstr_string(tlv_t *tlv,char *str,uint32_t strlen,int *err);
+
+void tlv_insert_utf8_string(tlv_t *tlv,const uint8_t *str,int *err);
+void tlv_extract_utf8_string(tlv_t *tlv,uint8_t *str,uint32_t strlen,int *err);
 
 void tlv_insert_date(tlv_t *tlv,tlv_date_t *d,int *err);
 void tlv_extract_date(tlv_t *tlv,tlv_date_t *d,int *err);
