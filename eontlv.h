@@ -25,9 +25,9 @@
 
 #define TLV_NULL                        0x0000 /* TLV with NULL value (length = 0) */
 #define TLV_DATA                        0x0001 /* Data with no specific type */
-#define TLV_ARRAY                       0x0002 /* Array of tlv objects */
-#define TLV_ARRAY_FIRT                  0x0003 /* Array of tlv objects, first in series */
-#define TLV_ARRAY_LAST                  0x0004 /* Array of tlv objects, last in series */
+#define TLV_LIST                        0x0002 /* List of tlv objects */
+#define TLV_LIST_FIRT                   0x0003 /* List of tlv objects, first in series */
+#define TLV_LIST_LAST                   0x0004 /* List of tlv objects, last in series */
 #define TLV_ID                          0x0005 /* TLV identifier object (two-byte big-endian integer) (applies to next data TLV in stream) */
 #define TLV_ID_CSTR_NAME_TABLE          0x0006 /* Array of TLV_CSTR_STRING objects containing names indexed by a TLV_ID value */
 #define TLV_ID_UTF8_NAME_TABLE          0x0007 /* Array of TLV_UTF8_STRING objects containing names indexed by a TLV_ID value */
@@ -104,8 +104,8 @@
 #define TLV_TIME                        0x0052 /* 16-bit big-endian integer containing HMSM (hour, minute, second, millisecond) formatted time */
 #define TLV_DATETIME                    0x0053 /* 32-bit big-endian integer formatted as above-described date and time */
 
-#define TLV_APPLICATION_SPECIFIC_START  0x7000 /* Start of reserved values to be used as needed by an application */ 
-#define TLV_APPLICATION_SPECIFIC_END    0x7FFF /* Last of reserved values to be used as needed by an application */
+#define TLV_APPLICATION_SPECIFIC_START  0x7000 /* Start of reserved application-specific values */ 
+#define TLV_APPLICATION_SPECIFIC_END    0x7FFF /* End of reserved application-specific values */
 
 #define TLV_ERR_BASE                    17000
 #define TLV_ERR_INVALID_TYPE    TLV_ERR_BASE + 1
@@ -119,20 +119,13 @@ typedef struct tlv
     uint16_t type;
     uint16_t len;
     uint8_t  *value;
+    struct tlv *next;
 } tlv_t;
 
 tlv_t *create_tlv(void);
-void destroy_tlv(tlv_t *tlv);
 int init_tlv(tlv_t *v);
-
-typedef struct tlv_node
-{
-    tlv_t tlv;
-    struct tlv_node *next;
-} tlv_node_t;
-
-tlv_node_t *create_tlv_node(void);
-void destroy_tlv_node(tlv_node_t *v);
+void destroy_tlv(tlv_t *tlv);
+void destroy_tlv_list(tlv_t *head);
 
 typedef struct tlv_date
 {

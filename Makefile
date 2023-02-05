@@ -10,6 +10,7 @@ alloc_value.o \
 date.o \
 datetime.o \
 error.o \
+extract_cstr.o \
 extract_int8.o \
 extract_int16.o \
 extract_int32.o \
@@ -19,14 +20,13 @@ extract_uint32.o \
 from_buffer.o \
 from_FILE.o \
 init.o \
-insert_int8.o \
+insert_cstr.o \
 insert_int16.o \
 insert_int32.o \
 insert_uint8.o \
 insert_uint16.o \
 insert_uint32.o \
 is_value_no_alloc.o \
-node.o \
 size.o \
 time.o \
 to_buffer.o \

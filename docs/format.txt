@@ -24,9 +24,9 @@ Defined Types
 -------------
 0x0000 - TLV with NULL value (length is 0)
 0x0001 - Data with no specific type 
-0x0002 - Array of tlv objects 
-0x0003 - Array of tlv objects, first in series 
-0x0004 - Array of tlv objects, last in series 
+0x0002 - List of tlv objects 
+0x0003 - List of tlv objects, first in series 
+0x0004 - List of tlv objects, last in series 
 0x0005 - TLV identifier object (two-byte big-endian integer)
 0x0006 - Array of TLV_CSTR_STRING names indexed by a TLV_ID value 
 0x0007 - Array of TLV_UTF8_STRING names indexed by a TLV_ID value 
@@ -93,8 +93,8 @@ Defined Types
 0x0052 - 16-bit big-endian integer containing HMSM formatted time
 0x0053 - 32-bit big-endian integer formatted as above-described date and time
 ...
-0x7000 - Start of reserved values to be used as needed by an application 
-0x7FFF - Last of reserved values to be used as needed by an application
+0x7000 - Start of reserved application-specific values 
+0x7FFF - End of reserved application-specific values
 
 
 +-----------+
