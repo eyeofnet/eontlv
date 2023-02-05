@@ -55,3 +55,12 @@ void destroy_tlv(tlv_t *tlv)
     }
 }
 
+void destroy_tlv_list(tlv_t *head)
+{
+    tlv_t *kill;
+    while (head) {
+        kill = head;
+        head = head->next;
+        destroy_tlv(kill);
+    }
+}

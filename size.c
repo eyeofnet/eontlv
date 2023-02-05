@@ -19,6 +19,7 @@
 
 #include "eontlv.h"
 
+/* Returns the number of bytes need to represent this tlv "in flight" */
 
 uint32_t tlv_size(tlv_t *tlv)
 {
@@ -28,3 +29,5 @@ uint32_t tlv_size(tlv_t *tlv)
     }
     return rv;
 }
+
+
