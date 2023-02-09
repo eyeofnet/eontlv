@@ -5,6 +5,7 @@ LIBS=-l eontlv
 
 OBJS = \
 eontest.o \
+test_cstr.o \
 test_date.o \
 test_datetime.o \
 test_eontlv.o \

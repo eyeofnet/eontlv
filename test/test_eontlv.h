@@ -23,6 +23,7 @@
 #include "eontest.h"
 
 
+int test_cstr(test_node_t *rec);
 int test_date(test_node_t *rec);
 int test_datetime(test_node_t *rec);
 int test_int8(test_node_t *rec);

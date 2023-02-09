@@ -72,7 +72,8 @@ void tlv_insert_cstr_string(tlv_t *tlv,const char *str,int *err)
                         for (i=0;i<chunk_len;i++) {
                             new_tlv->value[i] = (uint8_t) *str++;
                         }
-                        tlv->type = TLV_CSTR_STRING_LAST;
+                        new_tlv->type = TLV_CSTR_STRING_LAST;
+                        tail->next = new_tlv;
                     }
                 } else {
                     chk = ENOMEM;

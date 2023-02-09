@@ -22,6 +22,7 @@ from_buffer.o \
 from_FILE.o \
 init.o \
 insert_cstr.o \
+insert_int8.o \
 insert_int16.o \
 insert_int32.o \
 insert_uint8.o \
