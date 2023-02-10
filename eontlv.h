@@ -25,14 +25,13 @@
 
 #define TLV_NULL                        0x0000 /* TLV with NULL value (length = 0) */
 #define TLV_DATA                        0x0001 /* Data with no specific type */
-#define TLV_LIST                        0x0002 /* List of tlv objects */
-#define TLV_LIST_FIRT                   0x0003 /* List of tlv objects, first in series */
-#define TLV_LIST_LAST                   0x0004 /* List of tlv objects, last in series */
-#define TLV_ID                          0x0005 /* TLV identifier object (two-byte big-endian integer) (applies to next data TLV in stream) */
-#define TLV_ID_CSTR_NAME_TABLE          0x0006 /* Array of TLV_CSTR_STRING objects containing names indexed by a TLV_ID value */
-#define TLV_ID_UTF8_NAME_TABLE          0x0007 /* Array of TLV_UTF8_STRING objects containing names indexed by a TLV_ID value */
-#define TLV_ID_UTF16_NAME_TABLE         0x0008 /* Array of TLV_UTF16_STRING objects containing names indexed by a TLV_ID value */
-#define TLV_ID_UTF32_NAME_TABLE         0x0009 /* Array of TLV_UTF32_STRING objects containing names indexed by a TLV_ID value */
+#define TLV_LIST                        0x0002 /* Generic list of TLV objects */
+#define TLV_LIST_FIRT                   0x0003 /* Generic list of TLV objects, first in series */
+#define TLV_LIST_LAST                   0x0004 /* Generic list of TLV objects, last in series */
+#define TLV_CSTR_NAMESPACE              0x0005 /* List of TLV_CSTR_STRING specifically meant to provide object names */
+#define TLV_UTF8_NAMESPACE              0x0006 /* List of TLV_UTF8_STRING specifically meant to provide object names */
+#define TLV_UTF16_NAMESPACE             0x0007 /* List of TLV_UTF16_STRING specifically meant to provide object names */
+#define TLV_UTF32_NAMESPACE             0x0008 /* List of TLV_UTF32_STRING specifically meant to provide object names */
 
 #define TLV_INT8                        0x0010 /* Signed one-byte integer */
 #define TLV_UINT8                       0x0011 /* Unsigned one-byte integer */
@@ -101,11 +100,11 @@
 
 #define TLV_UUID                        0x0050 /* 16-byte big-endian UUID */
 #define TLV_DATE                        0x0051 /* 32-bit big-endian integer containing YYYYMMDD formatted date */
-#define TLV_TIME                        0x0052 /* 16-bit big-endian integer containing HMSM (hour, minute, second, millisecond) formatted time */
+#define TLV_TIME                        0x0052 /* 16-bit big-endian integer containing HMS (hour, minute, second) formatted time */
 #define TLV_DATETIME                    0x0053 /* 32-bit big-endian integer formatted as above-described date and time */
 
-#define TLV_APPLICATION_SPECIFIC_START  0x7000 /* Start of reserved application-specific values */
-#define TLV_APPLICATION_SPECIFIC_END    0x7FFF /* End of reserved application-specific values */
+#define TLV_APP_SPECIFIC_START          0x7000 /* Start of reserved application-specific values */
+#define TLV_APP_SPECIFIC_END            0x7FFF /* End of reserved application-specific values */
 
 #define TLV_ERR_BASE                    17000
 #define TLV_ERR_INVALID_TYPE    TLV_ERR_BASE + 1
@@ -116,10 +115,11 @@
 
 typedef struct tlv
 {
+    struct tlv *next;
+    uint8_t  *value;
     uint16_t type;
     uint16_t len;
-    uint8_t  *value;
-    struct tlv *next;
+    uint32_t id;    /* The "id" indicates a name from the namespace */
 } tlv_t;
 
 tlv_t *create_tlv(void);

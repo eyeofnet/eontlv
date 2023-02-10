@@ -6,15 +6,23 @@
 +--------+
 | Syntax |
 +--------+
-
-TLV objects are made up of a type, a length and a value. Types are represented as well-defined two-byte integers. Lengths are given as two-byte integers and the representation of the value depends on the type. The following table may be helpful.
+improve_semantics_section_of_docs
+TLV objects are made up of a type, a length and a value. Types are represented as well-defined two-byte integers. Lengths are given as two-byte integers and the representation of the value depends on the type. The following table describes the layout of a TLV on disk or on-the-wire in a network packet.
 
 +------------+----------+-----------------------------------------------+
 |    Name    |  Size    |                 Description                   |
 +------------+----------+-----------------------------------------------+
-|    Type    |  2 bytes | Big-endian integer containing type code       |
+|    Type    |  2 bytes | Big-endian integer containing type code.      |
+|            |          | There are many defined types, as listed below,|
+|            |          | as well as a range set apart for              |
+|            |          | application-specific use (0x7000-0x7fff)      |
 +------------+----------+-----------------------------------------------+
-|   Length   |  2 bytes | Big-endian integer containing length in bytes |
+|   Length   |  2 bytes | Big-endian integer containing length of the   |
+|            |          | "value" field in bytes                        |
++------------+----------+-----------------------------------------------+
+|     ID     |  4 bytes | Big-endian integer containing local ID. The   |
+|            |          | meaning of "ID" depends on the TLV type. See  |
+|            |          | the "Semantics" section for more information  |
 +------------+----------+-----------------------------------------------+
 |    Value   | variable | Actual data ("Length" bytes in length)        |
 +------------+----------+-----------------------------------------------+
@@ -22,79 +30,207 @@ TLV objects are made up of a type, a length and a value. Types are represented a
 
 Defined Types
 -------------
-0x0000 - TLV with NULL value (length is 0)
-0x0001 - Data with no specific type 
-0x0002 - List of tlv objects
-0x0003 - List of tlv objects, first in series
-0x0004 - List of tlv objects, last in series
-0x0005 - TLV identifier object (two-byte big-endian integer)
-0x0006 - Array of TLV_CSTR_STRING names indexed by a TLV_ID value 
-0x0007 - Array of TLV_UTF8_STRING names indexed by a TLV_ID value 
-0x0008 - Array of TLV_UTF16_STRING names indexed by a TLV_ID value
-0x0009 - Array of TLV_UTF32_STRING names indexed by a TLV_ID value 
-0x0010 - Signed one-byte integer
-0x0011 - Unsigned one-byte integer 
-0x0012 - Array of one-byte signed integers
-0x0013 - Array of one-byte signed integers, first in a series
-0x0014 - Array of one-byte signed integers, last in a series
-0x0015 - Array of one-byte unsigned integers
-0x0016 - Array of one-byte unsigned integers, first in a series
-0x0017 - Array of one-byte unsigned integers, last in a series */
-0x0020 - Signed 16-bit big-endian integer
-0x0021 - Unsigned 16-bit big-endian integer
-0x0022 - Array of 16-bit big-endian signed integers
-0x0023 - Array of 16-bit big-endian signed integers, first in a series
-0x0024 - Array of 16-bit big-endian signed integers, last in a series
-0x0025 - Array of 16-bit big-endian unsigned integers
-0x0026 - Array of 16-bit big-endian unsigned integers, first in a series
-0x0027 - Array of 16-bit big-endian unsigned integers, last in a series 
-0x0028 - Signed 16-bit little-endian integer
-0x0029 - Unsigned 16-bit little-endian integer
-0x002A - Array of 16-bit little-endian signed integers
-0x002B - Array of 16-bit little-endian signed integers, first in a series
-0x002C - Array of 16-bit little-endian signed integers, last in a series
-0x002D - Array of 16-bit little-endian unsigned integers
-0x002E - Array of 16-bit little-endian unsigned integers, first in a series
-0x002F - Array of 16-bit little-endian unsigned integers, last in a series
-0x0030 - Signed 32-bit big-endian integer
-0x0031 - Unsigned 32-bit big-endian integer
-0x0032 - Array of 32-bit big-endian signed integers
-0x0033 - Array of 32-bit big-endian signed integers, first in a series
-0x0034 - Array of 32-bit big-endian signed integers, last in a series
-0x0035 - Array of 32-bit big-endian unsigned integers
-0x0036 - Array of 32-bit big-endian unsigned integers, first in a series
-0x0037 - Array of 32-bit big-endian unsigned integers, last in a series
-0x0038 - Signed 32-bit little-endian integer
-0x0039 - Unsigned 32-bit little-endian integer
-0x003A - Array of 32-bit little-endian signed integers
-0x003B - Array of 32-bit little-endian signed integers, first in a series
-0x003C - Array of 32-bit little-endian signed integers, last in a series
-0x003D - Array of 32-bit little-endian unsigned integers
-0x003E - Array of 32-bit little-endian unsigned integers, first in a series
-0x003F - Array of 32-bit little-endian unsigned integers, last in a series
-0x0040 - Single ASCII character
-0x0041 - Null-terminated c-style ASCII character string
-0x0042 - Null-terminated c-style ASCII character string, first in a series
-0x0043 - Null-terminated c-style ASCII character string, last in a series
-0x0044 - Single UTF-8 character
-0x0045 - UTF-8 character string (not terminated)
-0x0046 - UTF-8 character string, first in a series (not terminated)
-0x0047 - UTF-8 character string, last in a series (not terminated)
-0x0048 - Single UTF-16 character
-0x0049 - UTF-16 character string (not terminated)
-0x004A - UTF-16 character string, first in a series (not terminated)
-0x004B - UTF-16 character string, last in a series (not terminated)
-0x004C - Single UTF-32 character
-0x004D - UTF-32 character string (not terminated)
-0x004E - UTF-32 character string, first in a series (not terminated)
-0x004F - UTF-32 character string, last in a series (not terminated)
-0x0050 - 16-byte big-endian UUID
-0x0051 - 32-bit big-endian integer containing YYYYMMDD formatted date
-0x0052 - 16-bit big-endian integer containing HMSM formatted time
-0x0053 - 32-bit big-endian integer formatted as above-described date and time
-...
-0x7000 - Start of reserved application-specific values
-0x7FFF - End of reserved application-specific values
+
++---------------------------+--------+----------------------------------------+
+|           Name            | Value  |             Description                |
++---------------------------+--------+----------------------------------------+
+| TLV_NULL                  | 0x0000 | TLV with NULL value (length is 0)      |
++---------------------------+--------+----------------------------------------+
+| TLV_DATA                  | 0x0001 | Data with no specific type             |
++---------------------------+--------+----------------------------------------+
+| TLV_LIST                  | 0x0002 | List of TLV objects                    |
++---------------------------+--------+----------------------------------------+
+| TLV_LIST_FIRST            | 0x0003 | List of TLV objects, first in series   |
++---------------------------+--------+----------------------------------------+
+| TLV_LIST_LAST             | 0x0004 | List of TLV objects, last in series    |
++---------------------------+--------+----------------------------------------+
+| TLV_CSTR_NAMESPACE        | 0x0005 | List of TLV_CSTR_STRING specifically   |
+|                           |        | meant to provide object names          |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF8_NAMESPACE        | 0x0006 | List of TLV_UTF8_STRING specifically   |
+|                           |        | meant to provide object names          |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF16_NAMESPACE       | 0x0007 | List of TLV_UTF16_STRING specifically  |
+|                           |        | meant to provide object names          |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF32_NAMESPACE       | 0x0008 | List of TLV_UTF32_STRING specifically  |
+|                           |        | meant to provide object names          |
++---------------------------+--------+----------------------------------------+
+| TLV_INT8                  | 0x0010 | Signed one-byte integer                |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT8                 | 0x0011 | Unsigned one-byte integer              |
++---------------------------+--------+----------------------------------------+
+| TLV_INT8_ARRAY            | 0x0012 | Array of one-byte signed integers      |
++---------------------------+--------+----------------------------------------+
+| TLV_INT8_ARRAY_FIRST      | 0x0013 | Array of one-byte signed integers,     |
+|                           |        | first in a series                      |
++---------------------------+--------+----------------------------------------+
+| TLV_INT8_ARRAY_LAST       | 0x0014 | Array of one-byte signed integers,     |
+|                           |        | last in a series                       |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT8_ARRAY           | 0x0015 | Array of one-byte unsigned integers    |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT8_ARRAY_FIRST     | 0x0016 | Array of one-byte unsigned integers,   |
+|                           |        | first in a series                      |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT8_ARRAY_LAST      | 0x0017 | Array of one-byte unsigned integers,   |
+|                           |        | last in a series                       |
++---------------------------+--------+----------------------------------------+
+| TLV_INT16_BE              | 0x0020 | Signed 16-bit big-endian integer       |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT16_BE             | 0x0021 | Unsigned 16-bit big-endian integer     |
++---------------------------+--------+----------------------------------------+
+| TLV_INT16_BE_ARRAY        | 0x0022 | Array of 16-bit big-endian signed      |
+|                           |        | integers                               |
++---------------------------+--------+----------------------------------------+
+| TLV_INT16_BE_ARRAY_FIRST  | 0x0023 | Array of 16-bit big-endian signed      |
+|                           |        | integers, first in a series            |
++---------------------------+--------+----------------------------------------+
+| TLV_INT16_BE_ARRAY_LAST   | 0x0024 | Array of 16-bit big-endian signed      |
+|                           |        | integers, last in a series             |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT16_BE_ARRAY       | 0x0025 | Array of 16-bit big-endian unsigned    |
+|                           |        | integers                               |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT16_BE_ARRAY_FIRST | 0x0026 | Array of 16-bit big-endian unsigned    |
+|                           |        | integers, first in a series            |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT16_BE_ARRAY_LAST  | 0x0027 | Array of 16-bit big-endian unsigned    |
+|                           |        | integers, last in a series             |
++---------------------------+--------+----------------------------------------+
+| TLV_INT16_LE              | 0x0028 | Signed 16-bit little-endian integer    |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT16_LE             | 0x0029 | Unsigned 16-bit little-endian integer  |
++---------------------------+--------+----------------------------------------+
+| TLV_INT16_LE_ARRAY        | 0x002A | Array of 16-bit little-endian signed   |
+|                           |        | integers                               |
++---------------------------+--------+----------------------------------------+
+| TLV_INT16_LE_ARRAY_FIRST  | 0x002B | Array of 16-bit little-endian signed   |
+|                           |        | integers, first in a series            |
++---------------------------+--------+----------------------------------------+
+| TLV_INT16_LE_ARRAY_LAST   | 0x002C | Array of 16-bit little-endian signed   |
+|                           |        | integers, last in a series             |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT16_LE_ARRAY       | 0x002D | Array of 16-bit little-endian unsigned |
+|                           |        | integers                               |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT16_LE_ARRAY_FIRST | 0x002E | Array of 16-bit little-endian unsigned |
+|                           |        | integers, first in a series            |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT16_LE_ARRAY_LAST  | 0x002F | Array of 16-bit little-endian unsigned |
+|                           |        | integers, last in a series             |
++---------------------------+--------+----------------------------------------+
+| TLV_INT32_BE              | 0x0030 | Signed 32-bit big-endian integer       |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT32_BE             | 0x0031 | Unsigned 32-bit big-endian integer     |
++---------------------------+--------+----------------------------------------+
+| TLV_INT32_BE_ARRAY        | 0x0032 | Array of 32-bit big-endian signed      |
+|                           |        | integers                               |
++---------------------------+--------+----------------------------------------+
+| TLV_INT32_BE_ARRAY_FIRST  | 0x0033 | Array of 32-bit big-endian signed      |
+|                           |        | integers, first in a series            |
++---------------------------+--------+----------------------------------------+
+| TLV_INT32_BE_ARRAY_LAST   | 0x0034 | Array of 32-bit big-endian signed      |
+|                           |        | integers, last in a series             |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT32_BE ARRAY       | 0x0035 | Array of 32-bit big-endian unsigned    |
+|                           |        | integers                               |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT32_BE_ARRAY_FIRST | 0x0036 | Array of 32-bit big-endian unsigned    |
+|                           |        | integers, first in a series            |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT32_BE_ARRAY_LAST  | 0x0037 | Array of 32-bit big-endian unsigned    |
+|                           |        | integers, last in a series             |
++---------------------------+--------+----------------------------------------+
+| TLV_INT32_LE              | 0x0038 | Signed 32-bit little-endian integer    |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT32_LE             | 0x0039 | Unsigned 32-bit little-endian integer  |
++---------------------------+--------+----------------------------------------+
+| TLV_INT32_ARRAY           | 0x003A | Array of 32-bit little-endian signed   |
+|                           |        | integers                               |
++---------------------------+--------+----------------------------------------+
+| TLV_INT32_ARRAY_FIRST     | 0x003B | Array of 32-bit little-endian signed   |
+|                           |        | integers, first in a series            |
++---------------------------+--------+----------------------------------------+
+| TLV_INT32_ARRAY_LAST      | 0x003C | Array of 32-bit little-endian signed   |
+|                           |        | integers, last in a series             |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT32_ARRAY          | 0x003D | Array of 32-bit little-endian unsigned |
+|                           |        | integers                               |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT32_ARRAY_FIRST    | 0x003E | Array of 32-bit little-endian unsigned |
+|                           |        | integers, first in a series            |
++---------------------------+--------+----------------------------------------+
+| TLV_UINT32_ARRAY_LAST     | 0x003F | Array of 32-bit little-endian unsigned |
+|                           |        | integers, last in a series             |
++---------------------------+--------+----------------------------------------+
+| TLV_CSTR_CHAR             | 0x0040 | Single ASCII character                 |
++---------------------------+--------+----------------------------------------+
+| TLV_CSTR_STRING           | 0x0041 | Nominally null-terminated c-style ASCII|
+|                           |        | character string (see semantics)       |
++---------------------------+--------+----------------------------------------+
+| TLV_CSTR_STRING_FIRST     | 0x0042 | c-style ASCII character string, first  |
+|                           |        | in a series                            |
++---------------------------+--------+----------------------------------------+
+| TLV_CSTR_STRING_LAST      | 0x0043 | Null-terminated c-style ASCII          |
+|                           |        | character string, last in a series     |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF8_CHAR             | 0x0044 | Single UTF-8 character                 |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF8_STRING           | 0x0045 | UTF-8 character string (not terminated)|
++---------------------------+--------+----------------------------------------+
+| TLV_UTF8_STRING_FIRST     | 0x0046 | UTF-8 character string, first in a     |
+|                           |        | series (not terminated)                |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF8_STRING_LAST      | 0x0047 | UTF-8 character string, last in a      |
+|                           |        | series (not terminated)                |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF16_CHAR            | 0x0048 | Single UTF-16 character                |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF16_STRING          | 0x0049 | UTF-16 character string                |
+|                           |        | (not terminated)                       |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF16_STRING_FIRST    | 0x004A | UTF-16 character string, first in a    |
+|                           |        | series (not terminated)                |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF16_STRING_LAST     | 0x004B | UTF-16 character string, last in a     |
+|                           |        | series (not terminated)                |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF32_CHAR            | 0x004C | Single UTF-32 character                |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF32_STRING          | 0x004D | UTF-32 character string                |
+|                           |        | (not terminated)                       |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF32_STRING_FIRST    | 0x004E | UTF-32 character string, first in a    |
+|                           |        | series (not terminated)                |
++---------------------------+--------+----------------------------------------+
+| TLV_UTF32_STRING_LAST     | 0x004F | UTF-32 character string, last in a     |
+|                           |        | series (not terminated)                |
++---------------------------+--------+----------------------------------------+
+| TLV_UUID                  | 0x0050 | 16-byte big-endian UUID                |
++---------------------------+--------+----------------------------------------+
+| TLV_DATE                  | 0x0051 | 32-bit big-endian integer containing   |
+|                           |        | YYYYMMDD formatted date                |
++---------------------------+--------+----------------------------------------+
+| TLV_TIME                  | 0x0052 | 16-bit big-endian integer containing   |
+|                           |        | HMSO (hours, minutes, seconds, GMT     |
+|                           |        | offset) formatted time                 |
++---------------------------+--------+----------------------------------------+
+| TLV_DATETIME              | 0x0053 | 32-bit big-endian integer formatted as |
+|                           |        | above-described date and time          |
++---------------------------+--------+----------------------------------------+
+| TLV_GPS_COORDINATE        | 0x0054 | GPS coordinates (format?)              |
++---------------------------+--------+----------------------------------------+
+| ...                       | ...    | ...                                    |
++---------------------------+--------+----------------------------------------+
+| TLV_APP_SPECIFIC_START    | 0x7000 | Start of reserved application-specific |
+|                           |        | values                                 |
++---------------------------+--------+----------------------------------------+
+| ...                       | ...    | ...                                    |
++---------------------------+--------+----------------------------------------+
+| TLV_APP_SPECIFIC_END      | 0x7FFF | End of reserved application-specific   |
+|                           |        |  values                                |
++---------------------------+--------+----------------------------------------+
 
 
 +-----------+
@@ -103,19 +239,42 @@ Defined Types
 
 The following section describes conventions that enhance the EON TLV syntax:
 
+ID
+--
+Each TLV has an ID that can be used for naming. For strings in instantiations
+of TLV_XXXX_NAMESPACE objects, the ID is attached to the string.
+For all other TLV objects, the ID refers to one of the string IDs in the
+TLV_XXXX_NAMESPACE and the string is assumed to be the name of that object.
+Multiple objects may refer to the same string in the namespace, but the IDs
+in the namespace must be unique. Files containing TLVs and network sessions
+consisting of TLVs may contain multiple namespaces, but all of the IDs across
+the file or session must be unique.
+
+Lists
+-----
+TLVs may be combined into lists in order to create structure. In memory, each TLV
+has a "next" pointer that connects it to the next TLV in the list. On disk or on-the-wire,
+a list TLV is created that contains the consecutive members of the list in its value field
+and the "next" pointer disappears. There is a TLV_LIST type (0x0002) that should be
+used for generic lists. If the list requires more than the maximum payload size (0xffff)
+on disk or on-the-wire, the list should be broken up into chunks that contain complete TLV
+objects, the total length of which sums to the max payload size or less. The first chunk 
+should be of type TLV_LIST_FIRST (0x0003), followed by zero or more TLV_LIST objects and a 
+terminating TLV_LIST_LAST (0x0004). If the entire list fits within two objects, then only
+the TLV_LIST_FIRST and TLV_LIST_LAST objects are used.
+
 Arrays
 ------
+There are several TLV array types defined. The values in the arrays are not stored as TLV
+objects, but rather consecutive values of the type described in the type name. For example,
+a TLV_UINT32_BE_ARRAY contains consecutive 32-bit big-endian integers. For arrays that are
+larger than the maximum payload size (0xffff), FIRST and LAST types of the array are defined
+to allow chunking up the array as follows:
+TLV_XXXX_ARRAY_FIRST object (max payload size)
+Zero or more TLV_XXXX_ARRAY objects (max payload size)
+Terminating TLV_XXXX_ARRAY_LAST object (variable size)
 
-Talk about first and last markers
+Note that if the array will fit in two objects, then only the _FIRST and _LAST objects are included.
 
-Identifiers
------------
-
-Talk about the TLV_ID type
-
-Identifier String Table
------------------------
-
-Talk about the TLV_ID_ASCII_TABLE etc. types
 
 

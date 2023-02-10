@@ -198,6 +198,11 @@ int main(int argc,char *argv[])
     if (rv) {
         goto out;
     }
+    rv = test_cstr(nd);
+    if (rv) {
+        goto out;
+    }
+
 
 out:
     if (g_tests) {

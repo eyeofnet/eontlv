@@ -19,13 +19,13 @@
 
 #include "eontlv.h"
 
-/* Returns the number of bytes need to represent this tlv "in flight" */
+/* Returns the number of bytes need to represent this TLV on disk or on-the-wire */
 
 uint32_t tlv_size(tlv_t *tlv)
 {
     uint32_t rv = 0;
     if (tlv) {
-        rv = tlv->len + 4;
+        rv = tlv->len + 8;
     }
     return rv;
 }
