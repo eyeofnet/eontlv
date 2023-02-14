@@ -23,6 +23,9 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#define FLAG_FREE_VALUE                 0x80
+#define FLAG_FREE_AS_LIST               0x40
+
 #define TLV_NULL                        0x0000 /* TLV with NULL value (length = 0) */
 #define TLV_DATA                        0x0001 /* Data with no specific type */
 #define TLV_LIST                        0x0002 /* Generic list of TLV objects */
@@ -156,7 +159,10 @@ typedef struct tlv_uuid
 void tlv_alloc_value(tlv_t *tlv,uint32_t size,int *err);
 void tlv_free_value(tlv_t *tlv,int *err);
 uint32_t tlv_size(tlv_t *tlv);
-int tlv_is_value_no_alloc(tlv_t *tlv);
+int tlv_should_free_value(tlv_t *tlv);
+int tlv_should_free_as_list(tlv_t *tlv);
+int tlv_set_free_value_flag(tlv_t *tlv,uint32_t v);
+int tlv_set_free_value_flag(tlv_t *tlv,uint32_t v);
 void tlv_to_buffer(tlv_t *v,uint8_t *buf,uint32_t buflen,int *err);
 tlv_t *tlv_from_buffer(uint8_t *buf,uint32_t buflen,int *err);
 void tlv_to_FILE(tlv_t *tlv,FILE *fptr,int *err);
@@ -185,8 +191,8 @@ uint64_t tlv_extract_uint64(tlv_t *tlv,int *err);
 void tlv_insert_cstr_string(tlv_t *tlv,const char *str,int *err);
 void tlv_extract_cstr_string(tlv_t *tlv,char *str,uint32_t strlen,int *err);
 
-void tlv_insert_utf8_string(tlv_t *tlv,const uint8_t *str,int *err);
-void tlv_extract_utf8_string(tlv_t *tlv,uint8_t *str,uint32_t strlen,int *err);
+void tlv_insert_utf8_string(tlv_t *tlv,const uint8_t *str,uint32_t len,int *err);
+void tlv_extract_utf8_string(tlv_t *tlv,uint8_t *str,uint32_t *strlen,int *err);
 
 void tlv_insert_date(tlv_t *tlv,tlv_date_t *d,int *err);
 void tlv_extract_date(tlv_t *tlv,tlv_date_t *d,int *err);

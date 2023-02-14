@@ -198,7 +198,21 @@ int main(int argc,char *argv[])
     if (rv) {
         goto out;
     }
+    nd = add_test_node();
+    if (!nd) {
+        rv = ENOMEM;
+        goto out;
+    }
     rv = test_cstr(nd);
+    if (rv) {
+        goto out;
+    }
+    nd = add_test_node();
+    if (!nd) {
+        rv = ENOMEM;
+        goto out;
+    }
+    rv = test_utf8_str(nd);
     if (rv) {
         goto out;
     }

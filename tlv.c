@@ -33,7 +33,7 @@ void tlv_free_value(tlv_t *tlv,int *err)
 {
     int chk = 0;
     if (tlv) {
-        if (tlv->value && !tlv_is_value_no_alloc(tlv)) {
+        if (tlv->value && tlv_should_free_value(tlv)) {
             free(tlv->value);
 	}
         tlv->value = NULL;
@@ -47,6 +47,7 @@ void tlv_free_value(tlv_t *tlv,int *err)
     }
 }
 
+/* FIXME: For lists, should destroy_tlv delete all the TLVs in the list? */
 void destroy_tlv(tlv_t *tlv)
 {
     if (tlv) {

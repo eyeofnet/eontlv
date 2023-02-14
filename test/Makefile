@@ -16,6 +16,7 @@ test_time.o \
 test_uint16.o \
 test_uint32.o \
 test_uint8.o \
+test_utf8_str.o \
 test_uuid.o
 
 %.o: %.c

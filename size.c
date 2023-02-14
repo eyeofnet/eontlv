@@ -19,10 +19,12 @@
 
 #include "eontlv.h"
 
-/* Returns the number of bytes need to represent this TLV on disk or on-the-wire */
+
+/* Returns the number of bytes needed to represent this TLV on disk or on-the-wire */
 
 uint32_t tlv_size(tlv_t *tlv)
 {
+/* FIXME: For lists, this should calculate the entire size */
     uint32_t rv = 0;
     if (tlv) {
         rv = tlv->len + 8;
