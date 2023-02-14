@@ -20,7 +20,10 @@ TLV objects are made up of a type, a length and a value. Types are represented a
 |   Length   |  2 bytes | Big-endian integer containing length of the   |
 |            |          | "value" field in bytes                        |
 +------------+----------+-----------------------------------------------+
-|     ID     |  4 bytes | Big-endian integer containing local ID. The   |
+|   Flags    |  1 byte  | 0x80 - Free value with structure              |
+|            |          | 0x40 - Free entire list                       |
++------------+----------+-----------------------------------------------+
+|     ID     |  3 bytes | Big-endian integer containing local ID. The   |
 |            |          | meaning of "ID" depends on the TLV type. See  |
 |            |          | the "Semantics" section for more information  |
 +------------+----------+-----------------------------------------------+

@@ -35,6 +35,7 @@ void tlv_insert_int16(tlv_t *tlv,int16_t v,int *err)
 	    *ptr = (uint8_t) (v & 0x00ff);
 	    tlv->type = TLV_INT16_BE;
             tlv->len = 2;
+            tlv_set_free_value_flag(tlv,0);
         }
     } else {
         chk = EINVAL;        

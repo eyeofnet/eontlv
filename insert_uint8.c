@@ -34,6 +34,7 @@ void tlv_insert_uint8(tlv_t *tlv,uint8_t v,int *err)
 	    *ptr = v;
 	    tlv->type = TLV_UINT8;
             tlv->len = 1;
+            tlv_set_free_value_flag(tlv,0);
         }
     } else {
         chk = EINVAL;        

@@ -33,6 +33,7 @@ int test_time(test_node_t *rec);
 int test_uint8(test_node_t *rec);
 int test_uint16(test_node_t *rec);
 int test_uint32(test_node_t *rec);
+int test_utf8_str(test_node_t *rec);
 int test_uuid(test_node_t *rec);
 
 #endif /* _TEST_EONTLV_H_20230125_ */

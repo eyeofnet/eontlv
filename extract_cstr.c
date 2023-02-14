@@ -1,14 +1,34 @@
+/***************************************************************************
+ *  EONTLV is a C-language library that provides access to 
+ *  TLV (type, length, value) structures.
+ *  Copyright (C) 2023 Winslow Williams 
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ ***************************************************************************/
+
+#include <errno.h>
 #include <errno.h>
 #include <string.h>
 
 #include "eontlv.h"
 
-void tlv_extract_cstr_string(tlv_t *tlv,char *str,uint32_t strlen,int *err)
+void tlv_extract_cstr_string(tlv_t *tlv,char *str,uint32_t len,int *err)
 {
     uint32_t i;
     int chk = 0;
     if (tlv && str) {
-        if ((TLV_CSTR_STRING == tlv->type) && (strlen >= (tlv->len+1))) {
+        if ((TLV_CSTR_STRING == tlv->type) && (len >= (tlv->len+1))) {
             for (i=0;i<(tlv->len+1);i++) {
 	        str[i] = tlv->value[i];
 	    }
@@ -30,7 +50,7 @@ void tlv_extract_cstr_string(tlv_t *tlv,char *str,uint32_t strlen,int *err)
                 total_len += ptr->len;
                 ptr = ptr->next;
             }
-            if (strlen >= (total_len)) {
+            if (len >= (total_len)) {
                 uint32_t sidx = 0;
                 ptr = tlv;
                 while (ptr) {
